@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get("/", function () {
     return view("routes.root");
-});
+})->name("root");
 
 Route::get("/login", function () {
     return "login";
