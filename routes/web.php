@@ -1,18 +1,55 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 
 Route::get("/", function () {
-    return view("routes.root");
+    if (Auth()->guest()) {
+        return redirect("login");
+    }
+    return redirect("dashboard");
 })->name("root");
 
 Route::get("/login", function () {
-    return "login";
+    if (Auth()->check()) {
+        return redirect("dashboard");
+    }
+    return view("routes.login");
 })->name("login");
 
+Route::post("/login", function (Request $request) {
+    // TODO: Log In Function
+    return response()->json(
+        [
+            "status" => 501,
+            "comment" => "TODO: Implement Log In Authentication",
+            "message" => "Not Implemented: Data still received.",
+            "data" => $request->all(),
+        ],
+        501,
+    );
+});
+
 Route::get("/signup", function () {
-    return "signup";
+    if (Auth()->check()) {
+        return redirect("dashboard");
+    }
+    return view("routes.signup");
 })->name("signup");
+
+Route::post("/signup", function (Request $request) {
+    // TODO: Sign Up
+    return response()->json(
+        [
+            "status" => 501,
+            "comment" =>
+                "TODO: Create account, authenticate user, and redirect to dashboard",
+            "message" => "Not Implemented: Data still received.",
+            "data" => $request->all(),
+        ],
+        501,
+    );
+});
 
 Route::get("/dashboard", function () {
     return "dashboard";
