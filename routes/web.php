@@ -117,7 +117,7 @@ Route::middleware("auth")->group(function () use ($tickets) {
             [
                 "status" => 501,
                 "comment" =>
-                    "TODO: Create the ticket and redirect to the ticket itself",
+                    "TODO: Create the reply, refresh, and show the reply thread",
                 "message" => "Not Implemented: Data still received.",
                 "data" => $data,
             ],
