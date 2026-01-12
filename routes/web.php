@@ -4,11 +4,31 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
+// sample data
+$tickets = [
+    [
+        "id" => "0000-0001",
+        "status" => "Pending User Response",
+        "subject" => "Paano ako gagraduate ng may INC?",
+        "description" =>
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        "category" => "Scholarship",
+    ],
+    [
+        "id" => "0000-0002",
+        "status" => "Open",
+        "subject" => "Request for scholarship?",
+        "description" =>
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        "category" => "Scholarship",
+    ],
+];
+
 Route::get("/", function () {
     if (Auth()->guest()) {
         return redirect("login");
     }
-    return redirect("ticket");
+    return redirect("dashboard");
 })->name("root");
 
 Route::get("/login", function () {
@@ -22,7 +42,7 @@ Route::post("/login", [UserController::class, "log"]);
 
 Route::get("/signup", function () {
     if (Auth()->check()) {
-        return redirect("dashboard");
+        return redirect("ticket");
     }
     return view("routes.signup");
 })->name("signup");
@@ -38,29 +58,55 @@ Route::post("/logout", function () {
     return redirect("/");
 });
 
-Route::middleware("auth")->group(function () {
-    Route::get("/ticket", function () {
+// TODO: remove $tickets when implementing the ticket controller now
+Route::middleware("auth")->group(function () use ($tickets) {
+    Route::get("/dashboard", function () use ($tickets) {
         if (auth()->user()->isAdmin()) {
-            abort(501, "TODO: Show number of tickets and diagnostic tools?");
+            abort(
+                501,
+                "TODO: Show dashboard page where admin can create accounts with manager or agent roles",
+            );
         }
         if (auth()->user()->isManager()) {
             abort(
                 501,
-                "TODO: Show ticket page where they can see all tickets and assign them to agents",
+                "TODO: Show dashboard page where they can see all tickets and assign them to agents",
             );
         }
         if (auth()->user()->isAgent()) {
             abort(
                 501,
-                "TODO: Show ticket page where they resolve their assigned student's tickets.",
+                "TODO: Show dashboard page where they resolve their assigned student's tickets.",
             );
         }
-        return view("routes.user-tickets");
+
+        // TODO: Check owned tickets
+        return view("routes.user-tickets", ["tickets" => $tickets]);
     })->name("ticket");
 
     Route::get("/ticket/create", function () {
         return view("routes.create-ticket");
     })->name("ticket-create");
+
+    Route::get("/ticket/{id}", function (string $id) use ($tickets) {
+        if (auth()->user()->isAdmin()) {
+            abort(404); // return to admin dashboard instead
+        }
+        if (auth()->user()->isManager() || auth()->user()->isAgent()) {
+            abort(501, "TODO: Show ticket details page in superior mode.");
+        }
+
+        // TODO: Check if user owned the ticket.
+        $indexed_records = array_column($tickets, null, "id");
+
+        if (!array_key_exists($id, $indexed_records)) {
+            abort(404, "Ticket not found in local sample data.");
+        }
+
+        return view("routes.user-ticket-details", [
+            "ticket" => $indexed_records[$id],
+        ]);
+    })->name("ticket-details");
 
     Route::post("/ticket/create", function (Request $request) {
         return response()->json(
@@ -74,23 +120,4 @@ Route::middleware("auth")->group(function () {
             501,
         );
     });
-
-    Route::get("/ticket/assign", function () {
-        abort(
-            501,
-            "TODO: Show ticket assignment page for admins, managers, and agents only.",
-        );
-    })->name("ticket-assign");
-
-    Route::get("/ticket/{id}", function (string $id) {
-        abort(501, "TODO: Show ticket details page depending on the role.");
-    })->name("ticket-details");
-
-    Route::get("/ticket/{id}/review", function (string $id) {
-        abort(501, "TODO: Show ticket details page depending on the role.");
-    })->name("ticket-detail-review");
-
-    Route::get("/ticket/{id}/inquire", function (string $id) {
-        return "ticket#" . $id . "-message";
-    })->name("ticket-detail-inquire");
 });
