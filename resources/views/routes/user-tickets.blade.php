@@ -1,7 +1,11 @@
 @extends("layouts.main")
 
+@section("side")
+    <x-button :href="route('ticket-create')">New Ticket</x-button>
+@endsection
+
 @section("main")
-    <div class="flex w-full flex-1 flex-col items-center justify-center">
+    <div class="flex w-full flex-1 flex-col items-center justify-center p-4">
         <div
             class="flex w-[90%] flex-1 flex-col gap-4 rounded-xl border-2 border-black bg-white p-8"
         >

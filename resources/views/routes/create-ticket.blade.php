@@ -1,7 +1,7 @@
 @extends("layouts.main")
 
 @section("main")
-    <div class="flex w-full flex-col items-center justify-center gap-4">
+    <div class="flex w-full flex-col items-center justify-center gap-4 p-4">
         <div
             class="flex w-3xl flex-col gap-4 rounded-xl border-2 border-black bg-white p-8"
         >
@@ -10,6 +10,7 @@
                 method="POST"
                 action="/ticket/create"
                 class="flex w-full flex-col gap-4"
+                enctype="multipart/form-data"
             >
                 @csrf
                 <x-text-input
@@ -26,6 +27,8 @@
                     <option value="scholarship">Scholarship</option>
                     <option value="inquiry">Inquiry</option>
                 </x-select-input>
+                
+                <input type="file" id="upload" name="upload" />
 
                 <x-button :type="'submit'">Submit</x-button>
             </form>
