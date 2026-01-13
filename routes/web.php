@@ -13,6 +13,10 @@ $tickets = [
         "description" =>
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
         "category" => "Scholarship",
+        "priority" => "Urgent",
+        "requested_by" => "Sample User",
+        "assigned_to" => "Reimu Hakurei",
+        "assignee_title" => "Shrine Maiden",
     ],
     [
         "id" => "0000-0002",
@@ -21,6 +25,22 @@ $tickets = [
         "description" =>
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
         "category" => "Scholarship",
+        "priority" => "High",
+        "requested_by" => "Sample User",
+        "assigned_to" => "Marisa Kirisame",
+        "assignee_title" => "Human Magician",
+    ],
+    [
+        "id" => "0000-0003",
+        "status" => "Closed",
+        "subject" => "Idiot found on the bathroom",
+        "description" =>
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        "category" => "Scholarship",
+        "priority" => "Medium",
+        "requested_by" => "Sample User",
+        "assigned_to" => "Cirno",
+        "assignee_title" => "Stupid Fairy"
     ],
 ];
 
@@ -74,10 +94,8 @@ Route::middleware("auth")->group(function () use ($tickets) {
             );
         }
         if (auth()->user()->isAgent()) {
-            abort(
-                501,
-                "TODO: Show dashboard page where they resolve their assigned student's tickets.",
-            );
+            // TODO: Only give tickets agents are handled
+            return view("routes.agent-tickets", ["tickets" => $tickets]);
         }
 
         // TODO: Check owned tickets

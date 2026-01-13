@@ -23,32 +23,32 @@
                 <h1
                     class="text-3xl font-black tracking-tight text-zinc-900 uppercase"
                 >
-                    My Tickets
+                    Agent Dashboard
                 </h1>
                 <p class="text-lg text-zinc-500">
-                    Track and manage your support requests
+                    Active tickets for
+                    <span class="font-semibold text-red-800">
+                        {{ auth()->user()->name }}
+                    </span>
                 </p>
             </div>
-            <div class="flex gap-4">
-                <x-button
-                    :variant="'secondary'"
-                    onclick="location.reload()"
-                    class="shadow-sm"
-                >
-                    <i class="bi bi-arrow-clockwise mr-2"></i>
-                    Refresh
-                </x-button>
-                <x-button :href="route('ticket-create')">New Ticket</x-button>
-            </div>
+            <x-button
+                :variant="'secondary'"
+                class="shadow-sm hover:shadow"
+                onclick="location.reload()"
+            >
+                <i class="bi bi-arrow-clockwise mr-2"></i>
+                Refresh
+            </x-button>
         </div>
+
         <div class="grid grid-cols-1 gap-6 md:grid-cols-4">
-            <x-counter
-                :name="'In Progress'"
-                :value="1"
-                :color="'amber-500'"
-            />
-            <x-counter :name="'Closed'" :value="1" :color="'red-600'" />
+            <x-counter :name="'Overdue'" :value="1" :color="'red-600'" />
+            <x-counter :name="'Unassigned'" :value="1" :color="'zinc-400'" />
+            <x-counter :name="'Escalated'" :value="1" :color="'amber-500'" />
+            <x-counter :name="'Resolved'" :value="1" :color="'green-600'" />
         </div>
+
         <div
             class="flex items-center justify-between rounded-xl border border-zinc-200 bg-white p-4 shadow-sm"
         >
@@ -71,10 +71,15 @@
                         <option value="closed">Closed</option>
                     </x-select-input>
 
-                    <x-select-input :id="'category'" :label="'Category'">
+                    <x-select-input
+                        :id="'priority'"
+                        :label="'Priority Level'"
+                    >
                         <option value="">All Levels</option>
-                        <option value="urgent">Graduation</option>
-                        <option value="high">Documents</option>
+                        <option value="urgent">Urgent</option>
+                        <option value="high">High</option>
+                        <option value="medium">Medium</option>
+                        <option value="low">Low</option>
                     </x-select-input>
                 </div>
 
@@ -82,7 +87,7 @@
                     <x-button type="submit" class="min-w-32">
                         Apply Filters
                     </x-button>
-                    @if (request()->anyFilled(["status", "category"]))
+                    @if (request()->anyFilled(["status", "priority"]))
                         <a
                             href="{{ route("dashboard") }}"
                             class="flex items-center px-4 text-sm font-medium text-zinc-500 transition hover:text-red-800"
@@ -93,6 +98,7 @@
                 </div>
             </form>
         </div>
+
         <div
             class="overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm"
         >
@@ -104,11 +110,19 @@
                         <th class="border-b border-zinc-200 px-6 py-4">
                             Ticket ID
                         </th>
+                        
                         <th class="border-b border-zinc-200 px-6 py-4">
-                            Subject
+                            Requester
                         </th>
                         <th class="border-b border-zinc-200 px-6 py-4">
-                            Current Status
+                            Subject & Description
+                        </th>
+                        
+                        <th class="border-b border-zinc-200 px-6 py-4">
+                            Status
+                        </th>
+                        <th class="border-b border-zinc-200 px-6 py-4">
+                            Priority
                         </th>
                         <th
                             class="border-b border-zinc-200 px-6 py-4 text-right"
@@ -127,53 +141,57 @@
                                     #{{ $ticket["id"] }}
                                 </span>
                             </td>
+                            <td class="px-6 py-5 align-top">
+                                
+                                    {{ $ticket["requested_by"] }}
+                                
+                            </td>
+                            
                             <td class="px-6 py-5">
                                 <div
                                     class="font-bold text-zinc-900 transition-colors group-hover:text-red-800"
                                 >
                                     {{ $ticket["subject"] }}
                                 </div>
-                                {{-- Truncated description helps keep the table tidy --}}
-                                @if (isset($ticket["description"]))
-                                    <div
-                                        class="mt-1 max-w-sm truncate text-sm text-zinc-400"
-                                    >
-                                        {{ $ticket["description"] }}
-                                    </div>
-                                @endif
+                                <div
+                                    class="mt-1 max-w-sm truncate text-sm text-zinc-500"
+                                >
+                                    {{ $ticket["description"] }}
+                                </div>
                             </td>
+                            
                             <td class="px-6 py-5 align-top">
                                 <x-ticket-status :status="$ticket['status']" />
+                            </td>
+                            <td class="px-6 py-5 align-top">
+                                <x-ticket-priority :priority="$ticket['priority']" />
                             </td>
                             <td class="px-6 py-5 text-right align-top">
                                 <a
                                     href="/ticket/{{ $ticket["id"] }}"
                                     class="inline-flex items-center text-sm font-bold text-red-800 transition hover:text-red-600"
                                 >
-                                    View Thread
+                                    Manage
                                     <i class="bi bi-chevron-right ml-1"></i>
                                 </a>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="px-6 py-20 text-center">
+                            <td colspan="5" class="px-6 py-20 text-center">
                                 <div class="flex flex-col items-center">
                                     <i
-                                        class="bi bi-ticket-perforated text-5xl text-zinc-300"
+                                        class="bi bi-inbox text-5xl text-zinc-300"
                                     ></i>
                                     <p
                                         class="mt-4 text-lg font-medium text-zinc-500"
                                     >
-                                        You haven't created any tickets yet.
+                                        No tickets found
                                     </p>
-                                    <x-button
-                                        :href="route('ticket-create')"
-                                        :variant="'secondary'"
-                                        class="mt-4"
-                                    >
-                                        Create your first ticket
-                                    </x-button>
+                                    <p class="text-sm text-zinc-400">
+                                        Try adjusting your filters or search
+                                        query.
+                                    </p>
                                 </div>
                             </td>
                         </tr>
