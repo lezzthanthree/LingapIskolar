@@ -13,23 +13,6 @@
                 <x-ticket-status :status="$ticket['status']" />
             </x-slot>
             <x-slot:side>
-                <form
-                    method="POST"
-                    action="/ticket/{{ $ticket["id"] }}/status"
-                    class="flex justify-center"
-                >
-                    @csrf
-                    @method("PUT")
-                    <input type="hidden" name="status" value="Escalated" />
-                    <x-button
-                        :variant="'primary'"
-                        class="shadow-sm"
-                        :type="'submit'"
-                        :extend="false"
-                    >
-                        Escalate Ticket
-                    </x-button>
-                </form>
                 <x-button
                     :variant="'secondary'"
                     :href="route('dashboard')"
@@ -101,7 +84,30 @@
             </div>
 
             <div class="flex w-full flex-col gap-6 md:w-80">
-                <x-ticket-details-user :ticket="$ticket" />
+                <x-ticket-details-user :ticket="$ticket" :user="'user'"/>
+                <x-ticket-details-user :ticket="$ticket" :user="'agent'"/>
+                <div
+                    class="flex flex-col rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm"
+                >
+                    <h2
+                        class="mb-4 text-xs font-black tracking-widest text-zinc-500 uppercase"
+                    >
+                        Agent Assign
+                    </h2>
+                    <form
+                        method="POST"
+                        action="/ticket/{{ $ticket["id"] }}/assign"
+                        class="flex flex-col gap-4"
+                    >
+                        @csrf
+                        @method("PUT")
+                        <x-select-input :id="'assigned_to'">
+                            <option value="Reimu">Reimu</option>
+                            <option value="Marisa">Marisa</option>
+                        </x-select-input>
+                        <x-button :type="'submit'">Assign</x-button>
+                    </form>
+                </div>
                 <x-ticket-details-lifecycle :ticket="$ticket" />
             </div>
         </div>

@@ -80,7 +80,7 @@
                 </div>
             </div>
 
-            <div class="flex w-80 flex-col gap-6">
+            <div class="flex w-full flex-col gap-6 md:w-80">
                 <x-ticket-details-user :ticket="$ticket" />
             </div>
         </div>
