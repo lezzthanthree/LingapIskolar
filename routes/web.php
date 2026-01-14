@@ -88,15 +88,15 @@ Route::middleware("auth")->group(function () use ($tickets) {
             );
         }
         if (auth()->user()->isManager()) {
-            return view("routes.manager-tickets", ["tickets" => $tickets]);
+            return view("routes.manager-ticket-dashboard", ["tickets" => $tickets]);
         }
         if (auth()->user()->isAgent()) {
             // TODO: Only give tickets agents are handled
-            return view("routes.agent-tickets", ["tickets" => $tickets]);
+            return view("routes.agent-ticket-dashboard", ["tickets" => $tickets]);
         }
 
         // TODO: Check owned tickets
-        return view("routes.user-tickets", ["tickets" => $tickets]);
+        return view("routes.user-ticket-dashboard", ["tickets" => $tickets]);
     })->name("dashboard");
 
     Route::get("/ticket/create", function () {
@@ -184,7 +184,7 @@ Route::middleware("auth")->group(function () use ($tickets) {
         if (!auth()->user()->isManager()) {
             abort(401);
         }
-        
+
         $data = $request->all();
         $data["ticket_id"] = $id;
         $data["user_id"] = auth()->user()->id;
