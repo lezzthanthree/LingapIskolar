@@ -1,4 +1,5 @@
 @extends("layouts.main")
+@extends("layouts.user-sidebar")
 
 @section("main")
     <div

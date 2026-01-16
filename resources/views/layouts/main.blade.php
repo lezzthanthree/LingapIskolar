@@ -70,7 +70,10 @@
                     :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
                     class="fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-zinc-200 bg-white/80 p-4 backdrop-blur-md transition-transform duration-300 md:static md:translate-x-0 md:bg-gray-200"
                 >
-                    <div class="flex-1"></div>
+                    <div class="flex-1">
+                        @section("sidebar")
+                        @show
+                    </div>
                     <x-logout-modal />
                 </div>
                 <div

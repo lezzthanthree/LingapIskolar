@@ -1,4 +1,5 @@
 @extends("layouts.main")
+@extends("layouts.manager-sidebar")
 
 @section("headerside")
     <form
